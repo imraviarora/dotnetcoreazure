@@ -75,8 +75,8 @@ stages:
          resourceGroupName: 'rvrg'
          location: 'Central US'
          templateLocation: 'Linked artifact'
-         csmFile: '$(System.DefaultWorkingDirectory)\drop\DropArmTemplates\template.json'
-         csmParametersFile: '$(System.DefaultWorkingDirectory)\drop\DropArmTemplates\parameters.json'
+         csmFile: 'D:\a\1\a\drop\DropArmTemplates\template.json'
+         csmParametersFile: 'D:\a\1\a\drop\DropArmTemplates\parameters.json'
          overrideParameters: '-subscriptionId "8bc354b4-f372-41ce-a6c2-856ab22f5fcf" -name $(AppServiceName) -location "Central US" -hostingPlanName "ASP-rvrg-9df7" -serverFarmResourceGroup "rvrg" -alwaysOn false -sku "Free" -skuCode "F1" -workerSize "0" -workerSizeId "0" -numberOfWorkers "1" -currentStack "dotnetcore" -phpVersion "OFF" -errorLink "https://sampledotnetwebapp.scm.azurewebsites.net/detectors?type=tools&name=eventviewer"'
          deploymentMode: 'Incremental'
      - task: AzureRmWebAppDeployment@4
