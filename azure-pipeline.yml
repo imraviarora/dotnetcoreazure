@@ -85,4 +85,5 @@ stages:
          azureSubscription: 'Free Trial(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
          appType: 'webApp'
          WebAppName: '$(AppServiceName)'
-         packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+         packageForLinux: 'D:\a\1\a\drop\WebApp.zip'
+
