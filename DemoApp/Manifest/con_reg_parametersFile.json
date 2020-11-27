@@ -6,7 +6,7 @@
       "value": "ravikumar7206"
     },
     "acrAdminUserEnabled": {
-      "value": true
+      "value": "true"
     },
     "location": {
       "value": "[resourceGroup().location]"
