@@ -22,3 +22,30 @@ steps:
     csmFile: 'DemoApp/Manifest/con_reg_template.json'
     csmParametersFile: 'DemoApp/Manifest/con_reg_parametersFile.json'
     deploymentMode: 'Incremental'
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription: 'Free Trial (8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    azureContainerRegistry: '{"loginServer":"ravikumar7206.azurecr.io", "id" : "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourceGroups/rvrg/providers/Microsoft.ContainerRegistry/registries/ravikumar7206"}'
+    dockerFile: DemoApp/Dockerfile
+    imageName: 'demoapp:$(Build.BuildId)'
+    includeLatestTag: true
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: 'Free Trial (8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    azureContainerRegistry: '{"loginServer":"ravikumar7206.azurecr.io", "id" : "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourceGroups/rvrg/providers/Microsoft.ContainerRegistry/registries/ravikumar7206"}'
+    action: 'Push an image'
+    imageName: 'demoapp:$(Build.BuildId)'
+    includeLatestTag: true
+- task: CopyFiles@2
+  displayName: 'Copy Deployment Files'
+  inputs:
+    SourceFolder: 'DemoApp/Manifest'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
