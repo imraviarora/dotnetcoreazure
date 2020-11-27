@@ -27,7 +27,7 @@ steps:
   inputs:
     containerregistrytype: 'Azure Container Registry'
     azureSubscription: 'Free Trial(2)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
-    azureContainerRegistry: 'ravikumar7206'
+    azureContainerRegistry: '{"loginServer":"ravikumar7206.azurecr.io", "id" : "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourceGroups/rvrg/providers/Microsoft.ContainerRegistry/registries/ravikumar7206"}'
     action: 'Build an image'
     dockerFile: 'DemoApp/Dockerfile'
     imageName: 'demoapp:$(Build.BuildId)'
