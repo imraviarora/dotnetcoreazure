@@ -1,0 +1,86 @@
+# ASP.NET Core using ARM Template to create web service at Azure Portal
+# Working | Tested by me
+
+trigger:
+- master
+stages:
+ - stage: Build
+   jobs:
+   - job: Build
+
+     pool:
+       vmImage: 'windows-latest'
+
+     variables:
+       solution: '**/*.sln'
+       buildPlatform: 'Any CPU'
+       buildConfiguration: 'Release'
+
+     steps:
+     - task: NuGetToolInstaller@1
+
+     - task: NuGetCommand@2
+       inputs:
+         restoreSolution: '$(solution)'
+
+     - task: VSBuild@1
+       inputs:
+         solution: '$(solution)'
+         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+         platform: '$(buildPlatform)'
+         configuration: '$(buildConfiguration)'
+     
+     - task: DotNetCoreCLI@2
+       displayName: Publish
+       inputs:
+         command: publish
+         publishWebProjects: True
+         arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+         zipAfterPublish: True
+
+     - task: CopyFiles@2
+       displayName: 'Copy Files to: $(build.artifactstagingdirectory)/DropArmTemplates'
+       inputs:
+         SourceFolder: DemoApp/Manifest
+         TargetFolder: '$(build.artifactstagingdirectory)/DropArmTemplates'
+
+     - task: PublishBuildArtifacts@1
+       displayName: 'Publish Artifact'
+       inputs:
+         PathtoPublish: '$(build.artifactstagingdirectory)'
+       condition: succeededOrFailed()
+
+ - stage: Deploy
+   jobs:
+   - job: Deploy
+     pool:
+       vmImage: 'vs2017-win2016'
+     variables:
+       AppServiceName: 'sampleaspcorewebappdev'
+     steps:
+     - task: DownloadBuildArtifacts@0
+       inputs:
+         buildType: 'current'
+         downloadType: 'single'
+         artifactName: 'drop'
+         downloadPath: '$(System.ArtifactsDirectory)'
+     - task: AzureResourceManagerTemplateDeployment@3
+       inputs:
+         deploymentScope: 'Resource Group'
+         azureResourceManagerConnection: 'Free Trial(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+         subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
+         action: 'Create Or Update Resource Group'
+         resourceGroupName: 'rvrg'
+         location: 'Central US'
+         templateLocation: 'Linked artifact'
+         csmFile: 'D:\a\1\a\drop\DropArmTemplates\template.json'
+         csmParametersFile: 'D:\a\1\a\drop\DropArmTemplates\parameters.json'
+         overrideParameters: '-subscriptionId "8bc354b4-f372-41ce-a6c2-856ab22f5fcf" -name $(AppServiceName) -location "Central US" -hostingPlanName "ASP-rvrg-9df7" -serverFarmResourceGroup "rvrg" -alwaysOn false -sku "Free" -skuCode "F1" -workerSize "0" -workerSizeId "0" -numberOfWorkers "1" -currentStack "dotnetcore" -phpVersion "OFF" -errorLink "https://sampledotnetwebapp.scm.azurewebsites.net/detectors?type=tools&name=eventviewer"'
+         deploymentMode: 'Incremental'
+     - task: AzureRmWebAppDeployment@4
+       inputs:
+         ConnectionType: 'AzureRM'
+         azureSubscription: 'Free Trial(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+         appType: 'webApp'
+         WebAppName: '$(AppServiceName)'
+         packageForLinux: 'D:\a\1\a\drop\WebApp.zip'
