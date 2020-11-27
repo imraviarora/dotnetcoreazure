@@ -19,6 +19,6 @@ steps:
     resourceGroupName: 'rvrg'
     location: 'East Asia'
     templateLocation: 'Linked artifact'
-    csmFile: '$(build.artifactstagingdirectory)/DemoApp/Manifest/con_reg_template.json'
-    csmParametersFile: '$(build.artifactstagingdirectory)/DemoApp/Manifest/con_reg_parametersFile.json'
+    csmFile: 'DemoApp/Manifest/con_reg_template.json'
+    csmParametersFile: 'DemoApp/Manifest/con_reg_parametersFile.json'
     deploymentMode: 'Incremental'
