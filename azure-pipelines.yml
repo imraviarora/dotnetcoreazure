@@ -10,15 +10,36 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: AzureResourceManagerTemplateDeployment@3
+- task: Docker@0
+  displayName: 'Build an image DockerHub'
   inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: 'Free Trial(1)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
-    subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: 'rvrg'
-    location: 'East US'
-    templateLocation: 'Linked artifact'
-    csmFile: 'DemoApp/Manifest/aks_template.json'
-    csmParametersFile: 'DemoApp/Manifest/aks_parameters.json'
-    deploymentMode: 'Incremental'
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'ravikumar7206_dockerhub_other'
+    action: 'Build an image'
+    dockerFile: 'DemoApp/Dockerfile'
+    imageName: 'ravikumar7206/demoapp:$(Build.BuildId)'
+    includeLatestTag: true
+  enabled: false
+- task: Docker@0
+  displayName: 'Push an image Dockerhub'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'ravikumar7206_dockerhub_other'
+    action: 'Push an image'
+    imageName: 'ravikumar7206/demoapp:$(Build.BuildId)'
+    includeLatestTag: true
+  enabled: false
+
+#----------- AKS Creation ------------------
+# - task: AzureResourceManagerTemplateDeployment@3
+#   inputs:
+#     deploymentScope: 'Resource Group'
+#     azureResourceManagerConnection: 'Free Trial(1)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+#     subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
+#     action: 'Create Or Update Resource Group'
+#     resourceGroupName: 'rvrg'
+#     location: 'East US'
+#     templateLocation: 'Linked artifact'
+#     csmFile: 'DemoApp/Manifest/aks_template.json'
+#     csmParametersFile: 'DemoApp/Manifest/aks_parameters.json'
+#     deploymentMode: 'Incremental'
