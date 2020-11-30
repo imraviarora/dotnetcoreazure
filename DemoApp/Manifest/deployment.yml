@@ -16,8 +16,8 @@ spec:
         spec:
             containers:
             - name: k8s-demo
-              image: ravikumar7206.azurecr.io/demoapp:#{Build.BuildId}#
-              #image: ravikumar7206/demoapp:#{Build.BuildId}#
+#               image: ravikumar7206.azurecr.io/demoapp:#{Build.BuildId}#
+              image: ravikumar7206/demoapp:#{Build.BuildId}#
               ports:
               - containerPort: 80
             imagePullSecrets:
