@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "value": "perfectk8s"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "dnsPrefix": {
+            "value": "perfectk8s-dns"
+        },
+        "kubernetesVersion": {
+            "value": "1.17.13"
+        },
+        "networkPlugin": {
+            "value": "kubenet"
+        },
+        "enableRBAC": {
+            "value": true
+        },
+        "enablePrivateCluster": {
+            "value": false
+        },
+        "enableHttpApplicationRouting": {
+            "value": false
+        },
+        "enableAzurePolicy": {
+            "value": false
+        },
+        "vmssNodePool": {
+            "value": true
+        },
+        "workspaceName": {
+            "value": "DefaultWorkspace-8bc354b4-f372-41ce-a6c2-856ab22f5fcf-EUS"
+        },
+        "omsWorkspaceId": {
+            "value": "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourcegroups/defaultresourcegroup-eus/providers/microsoft.operationalinsights/workspaces/defaultworkspace-8bc354b4-f372-41ce-a6c2-856ab22f5fcf-eus"
+        },
+        "workspaceRegion": {
+            "value": "eastus"
+        }
+    }
+}
