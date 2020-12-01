@@ -1,7 +1,6 @@
 # Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# working pipeline checked by me 
+# ACR creation -> Docker Image build -> Push Image to ACR --> Create AKS
 
 trigger:
 - master
@@ -10,33 +9,58 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: Docker@0
-  displayName: 'Build an image DockerHub'
+- task: AzureResourceManagerTemplateDeployment@3
   inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: 'ravikumar7206_dockerhub_other'
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Free Trial(2)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'rvrg'
+    location: 'East Asia'
+    templateLocation: 'Linked artifact'
+    csmFile: 'DemoApp/Manifest/con_reg_template.json'
+    csmParametersFile: 'DemoApp/Manifest/con_reg_parametersFile.json'
+    deploymentMode: 'Incremental'
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Free Trial(2)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    azureContainerRegistry: '{"loginServer":"ravikumar7206.azurecr.io", "id" : "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourceGroups/rvrg/providers/Microsoft.ContainerRegistry/registries/ravikumar7206"}'
     action: 'Build an image'
     dockerFile: 'DemoApp/Dockerfile'
-    imageName: 'ravikumar7206/demoapp:$(Build.BuildId)'
+    imageName: 'demoapp:$(Build.BuildId)'
     includeLatestTag: true
 - task: Docker@0
-  displayName: 'Push an image Dockerhub'
+  displayName: 'Push an image'
   inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: 'ravikumar7206_dockerhub_other'
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Free Trial(2)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    azureContainerRegistry: '{"loginServer":"ravikumar7206.azurecr.io", "id" : "/subscriptions/8bc354b4-f372-41ce-a6c2-856ab22f5fcf/resourceGroups/rvrg/providers/Microsoft.ContainerRegistry/registries/ravikumar7206"}'
     action: 'Push an image'
-    imageName: 'ravikumar7206/demoapp:$(Build.BuildId)'
+    imageName: 'demoapp:$(Build.BuildId)'
     includeLatestTag: true
+- task: CopyFiles@2
+  displayName: 'Copy Deployment Files'
+  inputs:
+    SourceFolder: 'DemoApp/Manifest'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
 #----------- AKS Creation ------------------
-# - task: AzureResourceManagerTemplateDeployment@3
-#   inputs:
-#     deploymentScope: 'Resource Group'
-#     azureResourceManagerConnection: 'Free Trial(1)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
-#     subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
-#     action: 'Create Or Update Resource Group'
-#     resourceGroupName: 'rvrg'
-#     location: 'East US'
-#     templateLocation: 'Linked artifact'
-#     csmFile: 'DemoApp/Manifest/aks_template.json'
-#     csmParametersFile: 'DemoApp/Manifest/aks_parameters.json'
-#     deploymentMode: 'Incremental'
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Free Trial(1)(8bc354b4-f372-41ce-a6c2-856ab22f5fcf)'
+    subscriptionId: '8bc354b4-f372-41ce-a6c2-856ab22f5fcf'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'rvrg'
+    location: 'East US'
+    templateLocation: 'Linked artifact'
+    csmFile: 'DemoApp/Manifest/aks_template.json'
+    csmParametersFile: 'DemoApp/Manifest/aks_parameters.json'
+    deploymentMode: 'Incremental'
