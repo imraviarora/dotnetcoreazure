@@ -8,7 +8,7 @@ steps:
 - name: "gcr.io/cloud-builders/gke-deploy"
   args:
   - run
-  - --filename=k8s/
+  - --filename=DemoApp/Manifest/gke-deployment.yaml
   - --image=gcr.io/$PROJECT_ID/dotnetcoresample:latest
   - --location=us-central1-c
   - --cluster=perfectk8s
